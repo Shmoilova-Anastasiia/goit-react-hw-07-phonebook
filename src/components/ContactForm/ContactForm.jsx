@@ -1,9 +1,10 @@
 import React from 'react';
 import { Formik } from 'formik';
 import * as yup from 'yup';
+import 'yup-phone';
 
 import PropTypes from 'prop-types';
-import { toast } from 'react-toastify';
+
 import 'react-toastify/dist/ReactToastify.css';
 import { BsPersonAdd } from 'react-icons/bs';
 import {
@@ -15,8 +16,10 @@ import {
   LabelWrapper,
 } from './ContactForm.styled';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from 'redux/contact/contactSlice';
-import { getContacts } from 'redux/contact/contactSelector';
+
+import { addContactsThunk } from 'redux/thunks';
+import { toast } from 'react-toastify';
+import { selectContacts } from 'redux/contact/contactSelector';
 
 const toastifyOptions = {
   position: 'bottom-left',
@@ -28,7 +31,6 @@ const toastifyOptions = {
   progress: undefined,
   theme: 'colored',
 };
-
 const schema = yup.object().shape({
   name: yup
     .string()
@@ -38,37 +40,33 @@ const schema = yup.object().shape({
       'Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d`Artagnan'
     )
     .required(),
-  number: yup
-    .string()
-
-    .required(),
+  phone: yup.string().required(),
 });
 
 export const ContactForm = () => {
-  const contacts = useSelector(getContacts);
+  const contacts = useSelector(selectContacts);
   const dispatch = useDispatch();
-
-  const onAddContact = ({ name, number }) => {
+  const onAddContact = data => {
     const findName = contacts.find(
-      contact => contact.name.toLowerCase().trim() === name.toLowerCase().trim()
+      ({ name }) => name.toLowerCase().trim() === data.name.toLowerCase().trim()
     );
+
     if (findName) {
-      toast.error(`${name}: is already in contacts`, toastifyOptions);
+      toast.error(`${data.name}: is already in contacts`, toastifyOptions);
       return;
     }
-    const findNumber = contacts.find(contact => contact.number === number);
+    const findNumber = contacts.find(({ phone }) => phone === data.phone);
     if (findNumber) {
       toast.error(`This phone number is already in use.`, toastifyOptions);
       return;
     }
-
-    dispatch(addContact({ name, number }));
+    dispatch(addContactsThunk(data));
   };
   return (
     <Formik
       initialValues={{
         name: '',
-        number: '',
+        phone: '',
       }}
       onSubmit={(values, { resetForm }) => {
         onAddContact({ ...values });
@@ -83,14 +81,10 @@ export const ContactForm = () => {
           <FieldFormik type="text" name="name" placeholder="Name" required />
           <ErrorMessage name="name" component="span" />
         </FormField>
-        <FormField htmlFor="number">
+        <FormField>
           <LabelWrapper>Number</LabelWrapper>
-          <FieldFormik type="tel" name="number" required />
-          <ErrorMessage
-            name="number"
-            component="span"
-            placeholder="+38-050-123-45-67"
-          />
+          <FieldFormik type="tel" name="phone" required />
+          <ErrorMessage name="phone" component="span" />
         </FormField>
         <StyledButton type="submit">
           <span>

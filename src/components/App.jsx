@@ -18,9 +18,11 @@ export const App = () => {
       <Section title="Phonebook">
         <TitleH1>Phonebook</TitleH1>
         <ContactForm />
+
         <FilterContainer>
           <TitleH2>Contacts</TitleH2>
           <Filter />
+
           <ContactList />
         </FilterContainer>
       </Section>

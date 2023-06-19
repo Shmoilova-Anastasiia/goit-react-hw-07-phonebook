@@ -1,15 +1,15 @@
 import axios from 'axios';
 
-export const getContacts = async () => {
-  const { data } = await axios(
-    'https://648cb0ef8620b8bae7ed42e3.mockapi.io/contacts'
-  );
-  return data;
+axios.defaults.baseURL = 'https://648cb0ef8620b8bae7ed42e3.mockapi.io';
+
+export const getContacts = () => {
+  return axios.get('/contacts/');
 };
 
-export const getContactsDetails = async id => {
-  const { data } = await axios(
-    `https://648cb0ef8620b8bae7ed42e3.mockapi.io/contacts/:${id}`
-  );
-  return data;
+export const deleteContacts = id => {
+  return axios.delete(`/contacts/${id}`);
+};
+
+export const addContacts = data => {
+  return axios.post('/contacts/', data);
 };

@@ -5,10 +5,10 @@ import { LabelWrapper } from '../ContactForm/ContactForm.styled';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { setFilter } from 'redux/filter/filterSlice';
-import { getFilter } from 'redux/filter/filterSelector';
+import { selectFilter } from 'redux/filter/filterSelector';
 
 const Filter = () => {
-  const filter = useSelector(getFilter);
+  const filter = useSelector(selectFilter);
   const dispatch = useDispatch();
   const changeFilter = e => {
     dispatch(setFilter(e.target.value.toLowerCase().trim()));
